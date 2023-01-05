@@ -1,0 +1,26 @@
+name: 'Refresh TYPO3 API Access Token'
+
+on:
+  workflow_call:
+    secrets:
+      access-token:
+        required: true
+
+jobs:
+  refresh:
+    runs-on: php:8.1-alpine
+    env:
+      TYPO3_API_TOKEN: ${{ secrets.access-token }}
+
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          tools: composer:v2
+
+      - name: Install tailor
+        run: composer global require typo3/tailor --prefer-dist --no-progress
+
+      - name: Refresh token
+        run: php ~/.composer/vendor/bin/tailor ter:token:refresh
